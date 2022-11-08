@@ -80,7 +80,7 @@ router.delete(
   "/:id",
   catchAsync(async (req, res) => {
     await Campground.findByIdAndDelete(req.params.id);
-    req.flash("success", "Successfull deleted campground!");
+    req.flash("success", "Successfully deleted campground!");
     res.redirect("/campgrounds");
   })
 );
