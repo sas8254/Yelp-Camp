@@ -5,11 +5,13 @@ const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
 const session = require("express-session");
 const flash = require("connect-flash");
-const campgrounds = require("./routes/campground");
-const reviews = require("./routes/reviews");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
+
+const campgroundRoutes = require("./routes/campground");
+const reviewRoutes = require("./routes/reviews");
+const userRoutes = require("./routes/users");
 
 const mongoose = require("mongoose");
 mongoose
@@ -60,8 +62,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/campgrounds", campgrounds);
-app.use("/campgrounds/:id/reviews", reviews);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
+app.use("/", userRoutes);
 
 app.get("/fakeuser", async (req, res) => {
   const user = new User({ email: "sam@gmail.com", username: "sam" });
