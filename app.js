@@ -49,7 +49,10 @@ app.use(session(sessionConfig));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
 passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
@@ -59,6 +62,12 @@ app.use((req, res, next) => {
 
 app.use("/campgrounds", campgrounds);
 app.use("/campgrounds/:id/reviews", reviews);
+
+app.get("/fakeuser", async (req, res) => {
+  const user = new User({ email: "sam@gmail.com", username: "sam" });
+  const newUser = await User.register(user, "monkey");
+  res.send(newUser);
+});
 
 app.get("/", (req, res) => {
   res.render("home");
