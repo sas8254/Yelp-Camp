@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require("../models/user");
 const catchAsync = require("../utils/catchAsync");
 const passport = require("passport");
+const { checkReturnTo } = require("../middleware");
 
 router.get("/register", (req, res) => {
   res.render("users/register");
@@ -34,13 +35,16 @@ router.get("/login", (req, res) => {
 
 router.post(
   "/login",
+  checkReturnTo,
   passport.authenticate("local", {
     failureFlash: true,
     failureRedirect: "/login",
   }),
   async (req, res) => {
     req.flash("success", "Welcome back!");
-    res.redirect("/campgrounds");
+    const redirectUrl = res.locals.returnTo || "/campgrounds";
+    delete res.locals.returnTo;
+    res.redirect(redirectUrl);
   }
 );
 
