@@ -2,19 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Campground = require("../models/campground");
 const catchAsync = require("../utils/catchAsync");
-const ExpressError = require("../utils/ExpressError");
-const { campgroundSchema } = require("../schemas.js");
-const { isLoggedIn } = require("../middleware");
-
-const validateCampground = (req, res, next) => {
-  const { error } = campgroundSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
+const { isLoggedIn, isAuther, validateCampground } = require("../middleware");
 
 router.get(
   "/",
@@ -58,6 +46,7 @@ router.get(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isAuther,
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     if (!campground) {
@@ -71,24 +60,21 @@ router.get(
 router.put(
   "/:id",
   isLoggedIn,
+  isAuther,
   validateCampground,
   catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    if (!campground.author.equals(req.user._id)) {
-      req.flash("error", "You do not have permission to do that!");
-      return res.redirect(`/campgrounds/${req.params.id}`);
-    }
-    const camp = await Campground.findByIdAndUpdate(req.params.id, {
+    const campground = await Campground.findByIdAndUpdate(req.params.id, {
       ...req.body.campground,
     });
     req.flash("success", "successfully updated campground!");
-    res.redirect(`/campgrounds/${camp._id}`);
+    res.redirect(`/campgrounds/${campground._id}`);
   })
 );
 
 router.delete(
   "/:id",
   isLoggedIn,
+  isAuther,
   catchAsync(async (req, res) => {
     await Campground.findByIdAndDelete(req.params.id);
     req.flash("success", "Successfully deleted campground!");
