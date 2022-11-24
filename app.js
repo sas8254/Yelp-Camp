@@ -78,7 +78,7 @@ app.get("/fakeuser", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.render("home");
+  res.render("campgrounds/home");
 });
 
 app.all("*", (req, res, next) => {
