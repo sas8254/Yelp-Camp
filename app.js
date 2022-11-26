@@ -17,11 +17,14 @@ const helmet = require("helmet");
 const campgroundRoutes = require("./routes/campground");
 const reviewRoutes = require("./routes/reviews");
 const userRoutes = require("./routes/users");
+const MongoStore = require("connect-mongo");
 
-const dbUrl = process.env.DB_URL;
+// const dbUrl = process.env.DB_URL;
+const dbUrl = "mongodb://localhost:27017/YelpCamp";
+
 const mongoose = require("mongoose");
 mongoose
-  .connect("mongodb://localhost:27017/YelpCamp", {
+  .connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -47,7 +50,18 @@ app.use(
   })
 );
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  secret: "donttelltoanyonse",
+  touchAfter: 24 * 3600,
+});
+
+store.on("error", function (e) {
+  console.log("SESSION STORE ERROR", e);
+});
+
 const sessionConfig = {
+  store,
   name: "hkmta",
   // secure:true,
   secret: "donttelltoanyonse",
