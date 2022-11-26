@@ -47,6 +47,8 @@ app.use(
 );
 
 const sessionConfig = {
+  name: "hkmta",
+  // secure:true,
   secret: "donttelltoanyonse",
   resave: false,
   saveUninitialized: true,
