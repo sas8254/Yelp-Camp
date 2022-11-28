@@ -19,8 +19,7 @@ const reviewRoutes = require("./routes/reviews");
 const userRoutes = require("./routes/users");
 const MongoStore = require("connect-mongo");
 
-// const dbUrl = process.env.DB_URL;
-const dbUrl = "mongodb://localhost:27017/YelpCamp";
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/YelpCamp";
 
 const mongoose = require("mongoose");
 mongoose
@@ -50,9 +49,11 @@ app.use(
   })
 );
 
+const secret = process.env.SECRET || "donttelltoanyonse!";
+
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  secret: "donttelltoanyonse",
+  secret,
   touchAfter: 24 * 3600,
 });
 
@@ -64,7 +65,7 @@ const sessionConfig = {
   store,
   name: "hkmta",
   // secure:true,
-  secret: "donttelltoanyonse",
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
